@@ -1,3 +1,6 @@
+const CARD_WIDTH = 70
+const CARD_HEIGHT = 100
+
 class Card {
   constructor(_suit, _num, _pos) {
     if (!validateSuit(_suit)) {
@@ -17,7 +20,7 @@ class Card {
     if (_pos === undefined) this.pos = {x: 0, y: 0}
     else this.pos = _pos
 
-    this.dims = {x:70, y:100}
+    this.dims = {x:CARD_WIDTH, y:CARD_HEIGHT}
     this.zindex = 0
   }
 

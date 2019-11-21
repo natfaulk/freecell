@@ -1,11 +1,9 @@
 ;(() => {
   let d
 
-  let cards = []
+  let game = null
   let selectedCard = null
   let selectOffset = {x:0, y:0}
-
-  Window.cards = cards
   
   let setup = () => {
     d = new Mindrawingjs()
@@ -21,12 +19,7 @@
     d.c.addEventListener('touchmove', touchmoveHandler, false)
 
 
-    for (let i = 1; i <= 13; i++) {
-      cards.push(new Card('HEARTS', i, {x:d.width * Math.random(), y:d.height * Math.random()}))
-      cards.push(new Card('DIAMONDS', i, {x:d.width * Math.random(), y:d.height * Math.random()}))
-      cards.push(new Card('SPADES', i, {x:d.width * Math.random(), y:d.height * Math.random()}))
-      cards.push(new Card('CLUBS', i, {x:d.width * Math.random(), y:d.height * Math.random()}))
-    }
+    game = new Game(d)
   }
   
   let windowResize = () => {
@@ -38,9 +31,9 @@
     d.background('black')
     d.fill('white')
 
-    cards.forEach(_card => {
-      _card.draw(d)
-    })
+    if (game !== null) {
+      game.draw(d)
+    }
 
     window.requestAnimationFrame(draw)
   }
@@ -59,19 +52,13 @@
   }
   
   let mousedownHandler = e => {
-    // console.log('mouse down', e)
-    for (let i = cards.length - 1; i >= 0; i--) {
-      if (
-        e.clientX >= cards[i].pos.x
-        && e.clientX <= cards[i].pos.x + cards[i].dims.x
-        && e.clientY >= cards[i].pos.y
-        && e.clientY <= cards[i].pos.y + cards[i].dims.y
-      ) {
-        selectedCard = cards[i]
-        selectOffset.x = e.clientX - cards[i].pos.x
-        selectOffset.y = e.clientY - cards[i].pos.y
-        cards.push(cards.splice(i, 1)[0]) // move card to end of array so drawn on top
-        break
+    if (game !== null) {
+      let card = game.getCard(e.clientX, e.clientY)
+
+      if (card !== null) {
+        selectedCard = card
+        selectOffset.x = e.clientX - card.pos.x
+        selectOffset.y = e.clientY - card.pos.y
       }
     }
   }
@@ -82,6 +69,7 @@
   
   let mouseupHandler = e => {
     console.log('mouse up / touch up')
+    game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY))
     selectedCard = null
   }
   
@@ -91,6 +79,10 @@
       selectedCard.pos.x = e.clientX - selectOffset.x
       selectedCard.pos.y = e.clientY - selectOffset.y
     }
+
+    // if (game !== null) {
+    //   console.log(game.getStackFromMouse(e.clientX, e.clientY))
+    // }
   }
   
   let touchmoveHandler = (e) => {
