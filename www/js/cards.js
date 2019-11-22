@@ -1,9 +1,10 @@
 // some default values in case doesn't get updated should be visible still
-let CARD_DIMS = {x: 10, y: 10}
+let CARD_DIMS = {x: 10, y: 10, fontsize: 20}
 const CARD_X_MARGIN = 5
 let updateCardDims = _d => {
   CARD_DIMS.x = (_d.width - CARD_X_MARGIN) / 8 - CARD_X_MARGIN
   CARD_DIMS.y = CARD_DIMS.x * 1.4
+  CARD_DIMS.fontsize = Math.round(CARD_DIMS.x * 0.3)
 }
 
 class Card {
@@ -35,8 +36,8 @@ class Card {
     _d.rect(this.pos.x, this.pos.y, CARD_DIMS.x, CARD_DIMS.y)
 
     _d.fill(this.color)
-    _d.textSize(20)
-    _d.text(`${numToSymbol(this.num)} ${suitToSymbol(this.suit)}`, this.pos.x + 10, this.pos.y + 25)
+    _d.textSize(CARD_DIMS.fontsize)
+    _d.text(`${numToSymbol(this.num)} ${suitToSymbol(this.suit)}`, this.pos.x + 10, this.pos.y + Math.ceil(CARD_DIMS.fontsize * 1.2))
   }
 }
 
