@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <title>Freecell</title>
+  </head>
+  <body>
+    <div class="app">
+      <div id="menu">
+        <div id="newgame" class="menuitem menubutton" onclick="newGame()">New Game</div>
+        <div id="seed" class="menuitem">Seed: </div>
+        <div id="undo" class="menuitem menubutton" onclick="undo()">Undo</div>
+        <div id="moves" class="menuitem">Moves: 0</div>
+        <div id="time" class="menuitem">Time: 0</div>
+      </div>
+      
+      <canvas id="myCanvas"></canvas>
+    </div>
+    
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/mindrawing.min.js"></script>
+    <script type="text/javascript" src="js/cards.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/lcg.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+  </body>
+</html>

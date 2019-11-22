@@ -11,9 +11,14 @@ let undo = () => {
   game.undo()
 }
 
-;(() => {
+let toScaled = _val => Math.round(_val * window.devicePixelRatio)
+
+let main = () => {
+  console.log(window.devicePixelRatio)
+
   let selectedCard = null
   let selectOffset = {x:0, y:0}
+  let lastTouchPos = null
   
   let setup = () => {
     d = new Mindrawingjs()
@@ -25,7 +30,7 @@ let undo = () => {
     d.c.addEventListener('mouseup', mouseupHandler, false)
     d.c.addEventListener('mousemove', mousemoveHandler, false)
     d.c.addEventListener('touchstart', touchdownHandler, false)
-    d.c.addEventListener('touchend', mouseupHandler, false)
+    d.c.addEventListener('touchend', touchupHandler, false)
     d.c.addEventListener('touchmove', touchmoveHandler, false)
 
 
@@ -34,7 +39,7 @@ let undo = () => {
   
   let windowResize = () => {
     let rect = d.c.parentNode.getBoundingClientRect()
-    d.setCanvasSize(rect.width, rect.height)
+    d.setCanvasSize(rect.width * window.devicePixelRatio, rect.height * window.devicePixelRatio)
   }
   
   let draw = () => {
@@ -65,9 +70,10 @@ let undo = () => {
   }
   
   let mousedownHandler = e => {
+    console.log('MD', e.clientX, e.clientY)
     if (game !== null) {
       let card = game.getCard(e.clientX, e.clientY)
-
+      
       if (card !== null) {
         selectedCard = card
         selectOffset.x = e.clientX - card.pos.x
@@ -76,24 +82,19 @@ let undo = () => {
     }
   }
   
-  let touchdownHandler = e => {
-    console.log('touch down')
-    mousedownHandler(e)
-  }
-  
   let mouseupHandler = e => {
     if (selectedCard !== null) {
-      console.log('mouse up / touch up')
+      console.log('mouse up')
       game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY))
       selectedCard = null
-
+      
       let movesDiv = document.getElementById('moves')
       movesDiv.innerHTML = `Moves: ${game.moves}`
     }
   }
   
   let mousemoveHandler = (e) => {
-    // console.log('mouse move')
+    console.log('mouse move', e.clientX, e.clientY)
     if (selectedCard !== null) {
       selectedCard.pos.x = e.clientX - selectOffset.x
       selectedCard.pos.y = e.clientY - selectOffset.y
@@ -104,14 +105,28 @@ let undo = () => {
     // }
   }
   
-  let touchmoveHandler = (e) => {
-    console.log('touch move')
-    mousemoveHandler(e)
+  let touchdownHandler = e => {
+    console.log('touch down')
+    lastTouchPos = {clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY)}
+    mousedownHandler(lastTouchPos)
+    e.preventDefault()
+  }
+  
+  let touchmoveHandler = e => {
+    console.log('touch move', e.touches)
+    lastTouchPos = {clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY)}
+    mousemoveHandler(lastTouchPos)
+    e.preventDefault()
+  }
+
+  let touchupHandler = e => {
+    mouseupHandler(lastTouchPos)
+    e.preventDefault()
   }
   
   setup()
   // setInterval(tick, 1000 / 60)
 
   window.requestAnimationFrame(draw)
-})()
+}
 
