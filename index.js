@@ -43,6 +43,9 @@ let undo = () => {
 
     if (game !== null) {
       game.draw(d)
+
+      let timeDiv = document.getElementById('time')
+      timeDiv.innerHTML = `Time: ${Math.floor((Date.now() - game.starttime) / 1000)}`
     }
 
     window.requestAnimationFrame(draw)

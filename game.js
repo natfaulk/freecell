@@ -3,6 +3,7 @@ class Game {
     this.cards = []
     this.moves = 0
     this.undos = 0
+    this.starttime = Date.now()
     this.undoStack = []
 
     this.d = _d
