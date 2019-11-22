@@ -33,6 +33,8 @@ let main = () => {
     d.c.addEventListener('touchend', touchupHandler, false)
     d.c.addEventListener('touchmove', touchmoveHandler, false)
 
+    document.getElementById("newgame").addEventListener('click', newGame)
+    document.getElementById("undo").addEventListener('click', undo)
 
     newGame()
   }
