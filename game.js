@@ -1,6 +1,9 @@
 class Game {
   constructor(_d, _seed) {
     this.cards = []
+    this.moves = 0
+    this.undos = 0
+    this.undoStack = []
 
     this.d = _d
 
@@ -112,7 +115,7 @@ class Game {
     }
 
     for (let i = 0; i < this.stacks.opencells.length; i++) {
-      if (_card === this.stacks.opencells[i]) return i + 8
+      if (_card === this.stacks.opencells[i]) return i + 12
     }
 
     return -1
@@ -130,27 +133,72 @@ class Game {
     else if (!this.checkValidDest(_card, _dest)) validMove = false
     
     if (validMove) {
+      // do this first as col is modified later
+      this.undoStack.push({card:_card, from: col, to: _dest})
+      this.moves++
+
       if (col < 8) {
         if (_dest < 8) this.stacks.table[_dest].push(this.stacks.table[col].pop())
         else if(_dest < 12) this.stacks.foundations[_dest - 8].push(this.stacks.table[col].pop())
         else if(_dest < 16) this.stacks.opencells[_dest - 12] = this.stacks.table[col].pop()
       } else {
-        col -= 8
+        col -= 12 // if undo saving done after here will cause problems
         if (_dest < 8) {
           this.stacks.table[_dest].push(this.stacks.opencells[col])
           this.stacks.opencells[col] = null
         } else if(_dest < 12) {
-          this.stacks.foundations[_dest - 8].push(this.stacks.table[col])
+          this.stacks.foundations[_dest - 8].push(this.stacks.opencells[col])
           this.stacks.opencells[col] = null
         }
         else if(_dest < 16) {
-          this.stacks.opencells[_dest - 12] = this.stacks.table[col]
+          this.stacks.opencells[_dest - 12] = this.stacks.opencells[col]
           this.stacks.opencells[col] = null
         }
       }
+
     }
 
     this.alignCards()
+  }
+
+  undo() {
+    if (this.undoStack.length > 0) {
+      let action = this.undoStack.pop()
+      
+      // Note: to and from reversed as undoing
+      if (action.from < 8) {
+        if (action.to < 8) {
+          this.stacks.table[action.from].push(this.stacks.table[action.to].pop())
+        } else if (action.to < 12) {
+          this.stacks.table[action.from].push(this.stacks.foundations[action.to - 8].pop())          
+        } else {
+          this.stacks.table[action.from].push(this.stacks.opencells[action.to - 12])
+          this.stacks.opencells[action.to - 12] = null
+        }
+      } else if (action.from < 12) {
+        if (action.to < 8) {
+          this.stacks.opencells[action.from - 8].push(this.stacks.table[action.to].pop())
+        } else if (action.to < 12) {
+          this.stacks.opencells[action.from - 8].push(this.stacks.foundations[action.to - 8].pop())          
+        } else {
+          this.stacks.opencells[action.from - 8].push(this.stacks.opencells[action.to - 12])
+          this.stacks.opencells[action.to - 12] = null
+        }
+      } else {
+        if (action.to < 8) {
+          this.stacks.opencells[action.from - 12] = this.stacks.table[action.to].pop()
+        } else if (action.to < 12) {
+          this.stacks.opencells[action.from - 12] = this.stacks.foundations[action.to - 8].pop()
+        } else {
+          this.stacks.opencells[action.from - 12] = this.stacks.opencells[action.to - 12]
+          this.stacks.opencells[action.to - 12] = null
+        }
+      }
+
+      this.moves++
+      this.undos++
+      this.alignCards()
+    }
   }
 
   checkValidDest(_card, _dest) {

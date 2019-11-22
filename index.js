@@ -3,6 +3,12 @@ let d
 
 let newGame = () => {
   game = new Game(d)
+  let seedDiv = document.getElementById('seed')
+  seedDiv.innerHTML = `Seed: ${game.seed}`
+}
+
+let undo = () => {
+  game.undo()
 }
 
 ;(() => {
@@ -23,7 +29,7 @@ let newGame = () => {
     d.c.addEventListener('touchmove', touchmoveHandler, false)
 
 
-    game = new Game(d)
+    newGame()
   }
   
   let windowResize = () => {
@@ -73,9 +79,14 @@ let newGame = () => {
   }
   
   let mouseupHandler = e => {
-    console.log('mouse up / touch up')
-    game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY))
-    selectedCard = null
+    if (selectedCard !== null) {
+      console.log('mouse up / touch up')
+      game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY))
+      selectedCard = null
+
+      let movesDiv = document.getElementById('moves')
+      movesDiv.innerHTML = `Moves: ${game.moves}`
+    }
   }
   
   let mousemoveHandler = (e) => {
