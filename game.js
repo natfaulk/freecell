@@ -1,8 +1,11 @@
 class Game {
-  constructor(_d) {
+  constructor(_d, _seed) {
     this.cards = []
 
     this.d = _d
+
+    if (typeof(_seed) === 'number') this.seed = _seed
+    else this.seed = Math.floor(Math.random() * 32000) + 1 // use floor + 1 not ceil in case a 0
 
     this.stacks = {
       opencells: new Array(4).fill(null),
@@ -21,7 +24,7 @@ class Game {
 
     let tempcards = [...this.cards]
     let count = 0;
-    let lcg = new Lcg(100)
+    let lcg = new Lcg(this.seed)
     while (tempcards.length > 0) {
       let i = lcg.getNext() % tempcards.length
       let last = tempcards[tempcards.length - 1]

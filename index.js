@@ -1,7 +1,11 @@
-;(() => {
-  let d
+let game = null
+let d
 
-  let game = null
+let newGame = () => {
+  game = new Game(d)
+}
+
+;(() => {
   let selectedCard = null
   let selectOffset = {x:0, y:0}
   
@@ -65,6 +69,7 @@
   
   let touchdownHandler = e => {
     console.log('touch down')
+    mousedownHandler(e)
   }
   
   let mouseupHandler = e => {
@@ -87,6 +92,7 @@
   
   let touchmoveHandler = (e) => {
     console.log('touch move')
+    mousemoveHandler(e)
   }
   
   setup()
