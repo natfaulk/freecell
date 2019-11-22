@@ -40,15 +40,18 @@ class Game {
       if (count >= 8) count = 0
     }
 
+    updateCardDims(_d)
     this.alignCards()
   }
 
   draw(_d) {
+    updateCardDims(_d)
+
     for (let i = 0; i < 8; i++) {
       _d.stroke('white')
       _d.fill('black')
-      _d.rect(_d.width * (i + 1) / 9, 50, CARD_WIDTH, CARD_HEIGHT)
-      _d.rect(_d.width * (i + 1) / 9, 200, CARD_WIDTH, CARD_HEIGHT)
+      _d.rect(CARD_X_MARGIN + i * (CARD_DIMS.x + CARD_X_MARGIN), 200, CARD_DIMS.x, CARD_DIMS.y)
+      _d.rect(CARD_X_MARGIN + i * (CARD_DIMS.x + CARD_X_MARGIN), 200 + 1.5 * CARD_DIMS.y, CARD_DIMS.x, CARD_DIMS.y)
     }
 
     this.cards.forEach(_card => {
@@ -60,9 +63,9 @@ class Game {
     for (let i = this.cards.length - 1; i >= 0; i--) {
       if (
         _x >= this.cards[i].pos.x
-        && _x <= this.cards[i].pos.x + this.cards[i].dims.x
+        && _x <= this.cards[i].pos.x + CARD_DIMS.x
         && _y >= this.cards[i].pos.y
-        && _y <= this.cards[i].pos.y + this.cards[i].dims.y
+        && _y <= this.cards[i].pos.y + CARD_DIMS.y
       ) {
         this.cards.push(this.cards.splice(i, 1)[0]) // move card to end of array so drawn on top
         
@@ -76,24 +79,24 @@ class Game {
   alignCards() {
     this.stacks.table.forEach((_stack, _count) => {
       _stack.forEach((_card, _cardCount) => {
-        _card.pos.x = this.d.width * (_count + 1) / 9
-        _card.pos.y = 200 + _cardCount * 40
+        _card.pos.x = CARD_X_MARGIN + _count * (CARD_DIMS.x + CARD_X_MARGIN)
+        _card.pos.y = 200 + 1.5 * CARD_DIMS.y + 0.3 * CARD_DIMS.y * _cardCount
         _card.zindex = _cardCount
       })
     })
 
     this.stacks.foundations.forEach((_stack, _count) => {
       _stack.forEach((_card, _cardCount) => {
-        _card.pos.x = this.d.width * (_count + 1) / 9
-        _card.pos.y = 50
+        _card.pos.x = CARD_X_MARGIN + _count * (CARD_DIMS.x + CARD_X_MARGIN)
+        _card.pos.y = 200
         _card.zindex = _cardCount
       })
     })
 
     this.stacks.opencells.forEach((_opencell, _count) => {
       if (_opencell !== null) {
-        _opencell.pos.x = this.d.width * (_count + 1 + 4) / 9
-        _opencell.pos.y = 50
+        _opencell.pos.x = CARD_X_MARGIN + (_count + 4) * (CARD_DIMS.x + CARD_X_MARGIN)
+        _opencell.pos.y = 200
         _opencell.zindex = 0
       }
     })
@@ -226,11 +229,10 @@ class Game {
   }
 
   getStackFromMouse(_x, _y) {
-    let index = Math.floor(_x * 9 / this.d.width) - 1
+    let index = Math.floor((_x - CARD_X_MARGIN) / CARD_DIMS.x)
     let out = -1
-    if (_x - this.d.width * (index + 1) / 9 <= CARD_WIDTH) out = index
-    if (out !== -1 && _y < 200) out += 8
+    if (_x - CARD_DIMS.x * index <= CARD_DIMS.x) out = index
+    if (out !== -1 && _y < 200 + CARD_DIMS.y * 1.5) out += 8
     return out
   }
-
 }

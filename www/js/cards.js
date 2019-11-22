@@ -1,5 +1,10 @@
-const CARD_WIDTH = 70
-const CARD_HEIGHT = 100
+// some default values in case doesn't get updated should be visible still
+let CARD_DIMS = {x: 10, y: 10}
+const CARD_X_MARGIN = 5
+let updateCardDims = _d => {
+  CARD_DIMS.x = (_d.width - CARD_X_MARGIN) / 8 - CARD_X_MARGIN
+  CARD_DIMS.y = CARD_DIMS.x * 1.4
+}
 
 class Card {
   constructor(_suit, _num, _pos) {
@@ -20,7 +25,6 @@ class Card {
     if (_pos === undefined) this.pos = {x: 0, y: 0}
     else this.pos = _pos
 
-    this.dims = {x:CARD_WIDTH, y:CARD_HEIGHT}
     this.zindex = 0
   }
 
@@ -28,7 +32,7 @@ class Card {
     _d.fill('white')
     _d.stroke('black')
     _d.strokeWeight(2)
-    _d.rect(this.pos.x, this.pos.y, this.dims.x, this.dims.y)
+    _d.rect(this.pos.x, this.pos.y, CARD_DIMS.x, CARD_DIMS.y)
 
     _d.fill(this.color)
     _d.textSize(20)
