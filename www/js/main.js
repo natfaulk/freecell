@@ -311,7 +311,6 @@
     }
     moveCard(_card, _dest) {
       let col = this.findInStacks(_card);
-      console.log(col);
       let validMove = true;
       if (_dest === -1)
         validMove = false;
@@ -417,6 +416,14 @@
         out += 8;
       return out;
     }
+    checkWin() {
+      const f = this.stacks.foundations;
+      for (let i = 0; i < f.length; i++) {
+        if (f[i].length !== 13)
+          return false;
+      }
+      return true;
+    }
   };
 
   // src/app.js
@@ -485,6 +492,10 @@
         selectedCard = null;
         const movesDiv = document.getElementById("moves");
         movesDiv.innerHTML = `Moves: ${game.moves}`;
+        if (game.checkWin()) {
+          lg("WIN");
+          newGame();
+        }
       }
     };
     const mousemoveHandler = (e) => {

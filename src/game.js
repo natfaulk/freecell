@@ -132,8 +132,6 @@ export class Game {
   moveCard(_card, _dest) {
     let col = this.findInStacks(_card)
 
-    console.log(col)
-
     let validMove = true
     if (_dest === -1) validMove = false
     else if (col === -1) validMove = false
@@ -238,5 +236,13 @@ export class Game {
     if (_x - this.cardDims.x * index <= this.cardDims.x) out = index
     if (out !== -1 && _y < 200 + this.cardDims.y * 1.5) out += 8
     return out
+  }
+
+  checkWin() {
+    const f = this.stacks.foundations
+    for (let i = 0; i < f.length; i++) {
+      if (f[i].length !== 13) return false
+    }
+    return true
   }
 }

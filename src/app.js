@@ -9,6 +9,7 @@ let game = null
 let d
 
 const newGame = () => {
+  // game = new Game(d, 25904)
   game = new Game(d)
   const seedDiv = document.getElementById('seed')
   seedDiv.innerHTML = `Seed: ${game.seed}`
@@ -102,6 +103,12 @@ const main = () => {
       
       const movesDiv = document.getElementById('moves')
       movesDiv.innerHTML = `Moves: ${game.moves}`
+
+      if (game.checkWin()) {
+        // win....
+        lg('WIN')
+        newGame()
+      }
     }
   }
   
