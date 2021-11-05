@@ -1,5 +1,9 @@
 import Mindrawing from 'mindrawingjs'
 import {Game} from './game'
+import makeLogger from '@natfaulk/supersimplelogger'
+import {getCardDims} from './cards'
+
+const lg = makeLogger('App')
 
 let game = null
 let d
@@ -17,11 +21,10 @@ const undo = () => {
 const toScaled = _val => Math.round(_val * window.devicePixelRatio)
 
 const main = () => {
-  console.log(window.devicePixelRatio)
+  lg(`Device pixel ratio is: ${window.devicePixelRatio}`)
 
   let selectedCard = null
   let lastTouchPos = null
-  const selectOffset = {x: 0, y: 0}
   
   const setup = () => {
     d = new Mindrawing()
@@ -75,22 +78,26 @@ const main = () => {
   // }
   
   const mousedownHandler = e => {
-    console.log('MD', e.clientX, e.clientY)
+    const xpos = toScaled(e.clientX)
+    const ypos = toScaled(e.clientY)
+    lg('MD', xpos, ypos)
+
     if (game !== null) {
-      const card = game.getCard(e.clientX, e.clientY)
+      const card = game.getCard(xpos, ypos)
       
       if (card !== null) {
         selectedCard = card
-        selectOffset.x = e.clientX - card.pos.x
-        selectOffset.y = e.clientY - card.pos.y
       }
     }
   }
   
   const mouseupHandler = e => {
+    const xpos = toScaled(e.clientX)
+    const ypos = toScaled(e.clientY)
+
     if (selectedCard !== null) {
       console.log('mouse up')
-      game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY))
+      game.moveCard(selectedCard, game.getStackFromMouse(xpos, ypos))
       selectedCard = null
       
       const movesDiv = document.getElementById('moves')
@@ -99,10 +106,14 @@ const main = () => {
   }
   
   const mousemoveHandler = (e) => {
-    console.log('mouse move', e.clientX, e.clientY)
+    const xpos = toScaled(e.clientX)
+    const ypos = toScaled(e.clientY)
+    const cardDims = getCardDims()
+
     if (selectedCard !== null) {
-      selectedCard.pos.x = e.clientX - selectOffset.x
-      selectedCard.pos.y = e.clientY - selectOffset.y
+      // hold card in the middle
+      selectedCard.pos.x = xpos - cardDims.x / 2
+      selectedCard.pos.y = ypos - cardDims.y / 2
     }
 
     // if (game !== null) {
@@ -112,14 +123,14 @@ const main = () => {
   
   const touchdownHandler = e => {
     console.log('touch down')
-    lastTouchPos = {clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY)}
+    lastTouchPos = {clientX: e.touches[0].clientX, clientY: e.touches[0].clientY}
     mousedownHandler(lastTouchPos)
     e.preventDefault()
   }
   
   const touchmoveHandler = e => {
     console.log('touch move', e.touches)
-    lastTouchPos = {clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY)}
+    lastTouchPos = {clientX: e.touches[0].clientX, clientY: e.touches[0].clientY}
     mousemoveHandler(lastTouchPos)
     e.preventDefault()
   }

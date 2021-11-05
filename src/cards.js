@@ -1,10 +1,24 @@
-// some default values in case doesn't get updated should be visible still
-export const CARD_DIMS = {x: 10, y: 10, fontsize: 20}
-export const CARD_X_MARGIN = 5
-export const updateCardDims = _d => {
-  CARD_DIMS.x = (_d.width - CARD_X_MARGIN) / 8 - CARD_X_MARGIN
-  CARD_DIMS.y = CARD_DIMS.x * 1.4
-  CARD_DIMS.fontsize = Math.round(CARD_DIMS.x * 0.3)
+// class to manage card size - due to the app canvas size changing depending on device
+// or web browser window resizing
+class CardDims {
+  constructor() {
+  // some default values in case doesn't get updated should be visible still
+    this.x = 10
+    this.y = 10
+    this.xMargin = 5
+  }
+
+  update(_d) {
+    this.x = (_d.width - this.xMargin) / 8 - this.xMargin
+    this.y = this.x * 1.4
+    this.fontsize = Math.round(this.x * 0.3)
+  }
+}
+
+const cardDims = new CardDims
+
+export const getCardDims = () => {
+  return cardDims
 }
 
 export class Card {
@@ -33,11 +47,11 @@ export class Card {
     _d.fill('white')
     _d.stroke('black')
     _d.strokeWeight(2)
-    _d.rect(this.pos.x, this.pos.y, CARD_DIMS.x, CARD_DIMS.y)
+    _d.rect(this.pos.x, this.pos.y, cardDims.x, cardDims.y)
 
     _d.fill(this.color)
-    _d.textSize(CARD_DIMS.fontsize)
-    _d.text(`${numToSymbol(this.num)} ${suitToSymbol(this.suit)}`, this.pos.x + 10, this.pos.y + Math.ceil(CARD_DIMS.fontsize * 1.2))
+    _d.textSize(cardDims.fontsize)
+    _d.text(`${numToSymbol(this.num)} ${suitToSymbol(this.suit)}`, this.pos.x + 10, this.pos.y + Math.ceil(cardDims.fontsize * 1.2))
   }
 }
 

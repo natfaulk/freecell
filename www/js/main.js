@@ -57,16 +57,52 @@
     }
   });
 
+  // node_modules/@natfaulk/supersimplelogger/src/index.js
+  var require_src = __commonJS({
+    "node_modules/@natfaulk/supersimplelogger/src/index.js"(exports, module) {
+      var makeLogger2 = (_prefix) => {
+        let p = "";
+        if (typeof process !== "undefined" && process.env.SSLOGGER_PROCESS_PREFIX !== void 0) {
+          p = `[${process.env.SSLOGGER_PROCESS_PREFIX}] `;
+        }
+        if (_prefix !== void 0)
+          p += `[${_prefix}] `;
+        if (p === "")
+          return console.log;
+        return (...args) => {
+          if (typeof args[0] === "string")
+            args[0] = p + " " + args[0];
+          else
+            args.unshift(p);
+          console.log.apply(console, args);
+        };
+      };
+      if (typeof module !== "undefined" && module.exports) {
+        module.exports = makeLogger2;
+      } else
+        window.makeLogger = makeLogger2;
+    }
+  });
+
   // src/app.js
   var import_mindrawingjs = __toModule(require_mindrawing_min());
 
   // src/cards.js
-  var CARD_DIMS = { x: 10, y: 10, fontsize: 20 };
-  var CARD_X_MARGIN = 5;
-  var updateCardDims = (_d) => {
-    CARD_DIMS.x = (_d.width - CARD_X_MARGIN) / 8 - CARD_X_MARGIN;
-    CARD_DIMS.y = CARD_DIMS.x * 1.4;
-    CARD_DIMS.fontsize = Math.round(CARD_DIMS.x * 0.3);
+  var CardDims = class {
+    constructor() {
+      this.x = 10;
+      this.y = 10;
+      this.xMargin = 5;
+    }
+    update(_d) {
+      this.x = (_d.width - this.xMargin) / 8 - this.xMargin;
+      this.y = this.x * 1.4;
+      this.fontsize = Math.round(this.x * 0.3);
+    }
+  };
+  var cardDims = new CardDims();
+  var getCardDims = () => {
+    return cardDims;
   };
   var Card = class {
     constructor(_suit, _num, _pos) {
@@ -93,10 +129,10 @@
       _d.fill("white");
       _d.stroke("black");
       _d.strokeWeight(2);
-      _d.rect(this.pos.x, this.pos.y, CARD_DIMS.x, CARD_DIMS.y);
+      _d.rect(this.pos.x, this.pos.y, cardDims.x, cardDims.y);
       _d.fill(this.color);
-      _d.textSize(CARD_DIMS.fontsize);
-      _d.text(`${numToSymbol(this.num)} ${suitToSymbol(this.suit)}`, this.pos.x + 10, this.pos.y + Math.ceil(CARD_DIMS.fontsize * 1.2));
+      _d.textSize(cardDims.fontsize);
+      _d.text(`${numToSymbol(this.num)} ${suitToSymbol(this.suit)}`, this.pos.x + 10, this.pos.y + Math.ceil(cardDims.fontsize * 1.2));
     }
   };
   var validateSuit = (_suit) => {
@@ -175,6 +211,7 @@
       this.undos = 0;
       this.starttime = Date.now();
       this.undoStack = [];
+      this.cardDims = getCardDims();
       this.d = _d;
       if (typeof _seed === "number")
         this.seed = _seed;
@@ -204,16 +241,16 @@
         if (count >= 8)
           count = 0;
       }
-      updateCardDims(_d);
+      this.cardDims.update(_d);
       this.alignCards();
     }
     draw(_d) {
-      updateCardDims(_d);
+      this.cardDims.update(_d);
       for (let i = 0; i < 8; i++) {
         _d.stroke("white");
         _d.fill("black");
-        _d.rect(CARD_X_MARGIN + i * (CARD_DIMS.x + CARD_X_MARGIN), 200, CARD_DIMS.x, CARD_DIMS.y);
-        _d.rect(CARD_X_MARGIN + i * (CARD_DIMS.x + CARD_X_MARGIN), 200 + 1.5 * CARD_DIMS.y, CARD_DIMS.x, CARD_DIMS.y);
+        _d.rect(this.cardDims.xMargin + i * (this.cardDims.x + this.cardDims.xMargin), 200, this.cardDims.x, this.cardDims.y);
+        _d.rect(this.cardDims.xMargin + i * (this.cardDims.x + this.cardDims.xMargin), 200 + 1.5 * this.cardDims.y, this.cardDims.x, this.cardDims.y);
       }
       this.cards.forEach((_card) => {
         _card.draw(_d);
@@ -221,7 +258,7 @@
     }
     getCard(_x, _y) {
       for (let i = this.cards.length - 1; i >= 0; i--) {
-        if (_x >= this.cards[i].pos.x && _x <= this.cards[i].pos.x + CARD_DIMS.x && _y >= this.cards[i].pos.y && _y <= this.cards[i].pos.y + CARD_DIMS.y) {
+        if (_x >= this.cards[i].pos.x && _x <= this.cards[i].pos.x + this.cardDims.x && _y >= this.cards[i].pos.y && _y <= this.cards[i].pos.y + this.cardDims.y) {
           this.cards.push(this.cards.splice(i, 1)[0]);
           return this.cards[this.cards.length - 1];
         }
@@ -231,21 +268,21 @@
     alignCards() {
       this.stacks.table.forEach((_stack, _count) => {
         _stack.forEach((_card, _cardCount) => {
-          _card.pos.x = CARD_X_MARGIN + _count * (CARD_DIMS.x + CARD_X_MARGIN);
-          _card.pos.y = 200 + 1.5 * CARD_DIMS.y + 0.3 * CARD_DIMS.y * _cardCount;
+          _card.pos.x = this.cardDims.xMargin + _count * (this.cardDims.x + this.cardDims.xMargin);
+          _card.pos.y = 200 + 1.5 * this.cardDims.y + 0.3 * this.cardDims.y * _cardCount;
           _card.zindex = _cardCount;
         });
       });
       this.stacks.foundations.forEach((_stack, _count) => {
         _stack.forEach((_card, _cardCount) => {
-          _card.pos.x = CARD_X_MARGIN + _count * (CARD_DIMS.x + CARD_X_MARGIN);
+          _card.pos.x = this.cardDims.xMargin + _count * (this.cardDims.x + this.cardDims.xMargin);
           _card.pos.y = 200;
           _card.zindex = _cardCount;
         });
       });
       this.stacks.opencells.forEach((_opencell, _count) => {
         if (_opencell !== null) {
-          _opencell.pos.x = CARD_X_MARGIN + (_count + 4) * (CARD_DIMS.x + CARD_X_MARGIN);
+          _opencell.pos.x = this.cardDims.xMargin + (_count + 4) * (this.cardDims.x + this.cardDims.xMargin);
           _opencell.pos.y = 200;
           _opencell.zindex = 0;
         }
@@ -372,17 +409,19 @@
       return out;
     }
     getStackFromMouse(_x, _y) {
-      const index = Math.floor((_x - CARD_X_MARGIN) / CARD_DIMS.x);
+      const index = Math.floor((_x - this.cardDims.xMargin) / this.cardDims.x);
       let out = -1;
-      if (_x - CARD_DIMS.x * index <= CARD_DIMS.x)
+      if (_x - this.cardDims.x * index <= this.cardDims.x)
         out = index;
-      if (out !== -1 && _y < 200 + CARD_DIMS.y * 1.5)
+      if (out !== -1 && _y < 200 + this.cardDims.y * 1.5)
         out += 8;
       return out;
     }
   };
 
   // src/app.js
+  var import_supersimplelogger = __toModule(require_src());
+  var lg = (0, import_supersimplelogger.default)("App");
   var game = null;
   var d;
   var newGame = () => {
@@ -395,10 +434,9 @@
   };
   var toScaled = (_val) => Math.round(_val * window.devicePixelRatio);
   var main = () => {
-    console.log(window.devicePixelRatio);
+    lg(`Device pixel ratio is: ${window.devicePixelRatio}`);
     let selectedCard = null;
     let lastTouchPos = null;
-    const selectOffset = { x: 0, y: 0 };
     const setup = () => {
       d = new import_mindrawingjs.default();
       d.setup("myCanvas");
@@ -428,41 +466,45 @@
       window.requestAnimationFrame(draw);
     };
     const mousedownHandler = (e) => {
-      console.log("MD", e.clientX, e.clientY);
+      const xpos = toScaled(e.clientX);
+      const ypos = toScaled(e.clientY);
+      lg("MD", xpos, ypos);
       if (game !== null) {
-        const card = game.getCard(e.clientX, e.clientY);
+        const card = game.getCard(xpos, ypos);
         if (card !== null) {
           selectedCard = card;
-          selectOffset.x = e.clientX - card.pos.x;
-          selectOffset.y = e.clientY - card.pos.y;
         }
       }
     };
     const mouseupHandler = (e) => {
+      const xpos = toScaled(e.clientX);
+      const ypos = toScaled(e.clientY);
       if (selectedCard !== null) {
         console.log("mouse up");
-        game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY));
+        game.moveCard(selectedCard, game.getStackFromMouse(xpos, ypos));
         selectedCard = null;
         const movesDiv = document.getElementById("moves");
         movesDiv.innerHTML = `Moves: ${game.moves}`;
       }
     };
     const mousemoveHandler = (e) => {
-      console.log("mouse move", e.clientX, e.clientY);
+      const xpos = toScaled(e.clientX);
+      const ypos = toScaled(e.clientY);
+      const cardDims2 = getCardDims();
       if (selectedCard !== null) {
-        selectedCard.pos.x = e.clientX - selectOffset.x;
-        selectedCard.pos.y = e.clientY - selectOffset.y;
+        selectedCard.pos.x = xpos - cardDims2.x / 2;
+        selectedCard.pos.y = ypos - cardDims2.y / 2;
       }
     };
     const touchdownHandler = (e) => {
       console.log("touch down");
-      lastTouchPos = { clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY) };
+      lastTouchPos = { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
       mousedownHandler(lastTouchPos);
       e.preventDefault();
     };
     const touchmoveHandler = (e) => {
       console.log("touch move", e.touches);
-      lastTouchPos = { clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY) };
+      lastTouchPos = { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
       mousemoveHandler(lastTouchPos);
       e.preventDefault();
     };
