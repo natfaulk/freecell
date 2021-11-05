@@ -132,3 +132,4 @@ let main = () => {
   window.requestAnimationFrame(draw)
 }
 
+main()
