@@ -5,8 +5,10 @@
   "description": "A basic freecell app",
   "main": "server.js",
   "scripts": {
-    "start": "node .",
-    "builddev": "esbuild src/app.js --bundle --sourcemap --outfile=www/js/main.js"
+    "server": "node .",
+    "builddev": "esbuild src/app.js --bundle --sourcemap --outfile=www/js/main.js",
+    "watch": "npm run builddev -- --watch",
+    "dev": "run-p watch server"
   },
   "author": "natfaulk",
   "license": "ISC",
