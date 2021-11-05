@@ -16,25 +16,25 @@ export class Game {
 
     this.stacks = {
       opencells: new Array(4).fill(null),
-      foundations: [[],[],[],[]],
-      table: [[],[],[],[],[],[],[],[]]
+      foundations: [[], [], [], []],
+      table: [[], [], [], [], [], [], [], []]
       // this causes the tables to all be same table. BAD. 
       // table: new Array(8).fill([])
     }
 
     for (let i = 1; i <= 13; i++) {
-      this.cards.push(new Card('CLUBS', i, {x:_d.width * Math.random(), y:_d.height * Math.random()}))
-      this.cards.push(new Card('DIAMONDS', i, {x:_d.width * Math.random(), y:_d.height * Math.random()}))
-      this.cards.push(new Card('HEARTS', i, {x:_d.width * Math.random(), y:_d.height * Math.random()}))
-      this.cards.push(new Card('SPADES', i, {x:_d.width * Math.random(), y:_d.height * Math.random()}))
+      this.cards.push(new Card('CLUBS', i, {x: _d.width * Math.random(), y: _d.height * Math.random()}))
+      this.cards.push(new Card('DIAMONDS', i, {x: _d.width * Math.random(), y: _d.height * Math.random()}))
+      this.cards.push(new Card('HEARTS', i, {x: _d.width * Math.random(), y: _d.height * Math.random()}))
+      this.cards.push(new Card('SPADES', i, {x: _d.width * Math.random(), y: _d.height * Math.random()}))
     }
 
-    let tempcards = [...this.cards]
-    let count = 0;
-    let lcg = new Lcg(this.seed)
+    const tempcards = [...this.cards]
+    let count = 0
+    const lcg = new Lcg(this.seed)
     while (tempcards.length > 0) {
-      let i = lcg.getNext() % tempcards.length
-      let last = tempcards[tempcards.length - 1]
+      const i = lcg.getNext() % tempcards.length
+      const last = tempcards[tempcards.length - 1]
       tempcards[tempcards.length - 1] = tempcards[i]
       tempcards[i] = last
       
@@ -141,23 +141,23 @@ export class Game {
     
     if (validMove) {
       // do this first as col is modified later
-      this.undoStack.push({card:_card, from: col, to: _dest})
+      this.undoStack.push({card: _card, from: col, to: _dest})
       this.moves++
 
       if (col < 8) {
         if (_dest < 8) this.stacks.table[_dest].push(this.stacks.table[col].pop())
-        else if(_dest < 12) this.stacks.foundations[_dest - 8].push(this.stacks.table[col].pop())
-        else if(_dest < 16) this.stacks.opencells[_dest - 12] = this.stacks.table[col].pop()
+        else if (_dest < 12) this.stacks.foundations[_dest - 8].push(this.stacks.table[col].pop())
+        else if (_dest < 16) this.stacks.opencells[_dest - 12] = this.stacks.table[col].pop()
       } else {
         col -= 12 // if undo saving done after here will cause problems
         if (_dest < 8) {
           this.stacks.table[_dest].push(this.stacks.opencells[col])
           this.stacks.opencells[col] = null
-        } else if(_dest < 12) {
+        } else if (_dest < 12) {
           this.stacks.foundations[_dest - 8].push(this.stacks.opencells[col])
           this.stacks.opencells[col] = null
         }
-        else if(_dest < 16) {
+        else if (_dest < 16) {
           this.stacks.opencells[_dest - 12] = this.stacks.opencells[col]
           this.stacks.opencells[col] = null
         }
@@ -170,7 +170,7 @@ export class Game {
 
   undo() {
     if (this.undoStack.length > 0) {
-      let action = this.undoStack.pop()
+      const action = this.undoStack.pop()
       
       // Note: to and from reversed as undoing
       if (action.from < 8) {
@@ -214,14 +214,14 @@ export class Game {
     if (_dest < 8) {
       if (this.stacks.table[_dest].length === 0) out = true
       else {
-        let lastcard = this.stacks.table[_dest].slice(-1)[0]
+        const lastcard = this.stacks.table[_dest].slice(-1)[0]
         if (lastcard.color !== _card.color && (lastcard.num - 1) === _card.num) out = true
       }
     } else if (_dest < 12) {
       if (this.stacks.foundations[_dest - 8].length === 0) {
         if (_card.num === 1) out = true
       } else {
-        let lastcard = this.stacks.foundations[_dest - 8].slice(-1)[0]
+        const lastcard = this.stacks.foundations[_dest - 8].slice(-1)[0]
         if (lastcard.suit === _card.suit && (lastcard.num + 1) === _card.num) out = true
       }
     } else if (_dest < 16) {
@@ -232,7 +232,7 @@ export class Game {
   }
 
   getStackFromMouse(_x, _y) {
-    let index = Math.floor((_x - CARD_X_MARGIN) / CARD_DIMS.x)
+    const index = Math.floor((_x - CARD_X_MARGIN) / CARD_DIMS.x)
     let out = -1
     if (_x - CARD_DIMS.x * index <= CARD_DIMS.x) out = index
     if (out !== -1 && _y < 200 + CARD_DIMS.y * 1.5) out += 8

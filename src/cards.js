@@ -41,7 +41,7 @@ export class Card {
   }
 }
 
-let validateSuit = _suit => {
+const validateSuit = _suit => {
   if (_suit === 'CLUBS') return true
   if (_suit === 'HEARTS') return true
   if (_suit === 'DIAMONDS') return true
@@ -50,14 +50,14 @@ let validateSuit = _suit => {
   return false
 }
 
-let validateNum = _num => {
+const validateNum = _num => {
   if (typeof(_num) === 'number') {
     if (_num < 1) return false
     if (_num > 13) return false
     return true
   }
   
-  if(typeof(_num) === 'string') {
+  if (typeof(_num) === 'string') {
     if (
       _num === 'J' || 
       _num === 'j' || 
@@ -67,14 +67,14 @@ let validateNum = _num => {
       _num === 'k' ||
       _num === 'A' ||
       _num === 'a'
-      ) return true
+    ) return true
     return false
   }
   
   return false
 }
 
-let numToSymbol = _num => {
+const numToSymbol = _num => {
   if (typeof(_num) === 'number') {
     if (_num === 0) return 'X'
     if (_num === 1) return 'A'
@@ -91,7 +91,7 @@ let numToSymbol = _num => {
   return 'X'
 }
 
-let suitToSymbol = _suit => {
+const suitToSymbol = _suit => {
   if (_suit === 'CLUBS') return '♣️'
   if (_suit === 'HEARTS') return '♥️'
   if (_suit === 'DIAMONDS') return '♦️'

@@ -191,12 +191,12 @@
         this.cards.push(new Card("HEARTS", i, { x: _d.width * Math.random(), y: _d.height * Math.random() }));
         this.cards.push(new Card("SPADES", i, { x: _d.width * Math.random(), y: _d.height * Math.random() }));
       }
-      let tempcards = [...this.cards];
+      const tempcards = [...this.cards];
       let count = 0;
-      let lcg = new Lcg(this.seed);
+      const lcg = new Lcg(this.seed);
       while (tempcards.length > 0) {
-        let i = lcg.getNext() % tempcards.length;
-        let last = tempcards[tempcards.length - 1];
+        const i = lcg.getNext() % tempcards.length;
+        const last = tempcards[tempcards.length - 1];
         tempcards[tempcards.length - 1] = tempcards[i];
         tempcards[i] = last;
         this.stacks.table[count].push(tempcards.pop());
@@ -312,7 +312,7 @@
     }
     undo() {
       if (this.undoStack.length > 0) {
-        let action = this.undoStack.pop();
+        const action = this.undoStack.pop();
         if (action.from < 8) {
           if (action.to < 8) {
             this.stacks.table[action.from].push(this.stacks.table[action.to].pop());
@@ -352,7 +352,7 @@
         if (this.stacks.table[_dest].length === 0)
           out = true;
         else {
-          let lastcard = this.stacks.table[_dest].slice(-1)[0];
+          const lastcard = this.stacks.table[_dest].slice(-1)[0];
           if (lastcard.color !== _card.color && lastcard.num - 1 === _card.num)
             out = true;
         }
@@ -361,7 +361,7 @@
           if (_card.num === 1)
             out = true;
         } else {
-          let lastcard = this.stacks.foundations[_dest - 8].slice(-1)[0];
+          const lastcard = this.stacks.foundations[_dest - 8].slice(-1)[0];
           if (lastcard.suit === _card.suit && lastcard.num + 1 === _card.num)
             out = true;
         }
@@ -372,7 +372,7 @@
       return out;
     }
     getStackFromMouse(_x, _y) {
-      let index = Math.floor((_x - CARD_X_MARGIN) / CARD_DIMS.x);
+      const index = Math.floor((_x - CARD_X_MARGIN) / CARD_DIMS.x);
       let out = -1;
       if (_x - CARD_DIMS.x * index <= CARD_DIMS.x)
         out = index;
@@ -387,7 +387,7 @@
   var d;
   var newGame = () => {
     game = new Game(d);
-    let seedDiv = document.getElementById("seed");
+    const seedDiv = document.getElementById("seed");
     seedDiv.innerHTML = `Seed: ${game.seed}`;
   };
   var undo = () => {
@@ -397,9 +397,9 @@
   var main = () => {
     console.log(window.devicePixelRatio);
     let selectedCard = null;
-    let selectOffset = { x: 0, y: 0 };
     let lastTouchPos = null;
-    let setup = () => {
+    const selectOffset = { x: 0, y: 0 };
+    const setup = () => {
       d = new import_mindrawingjs.default();
       d.setup("myCanvas");
       windowResize();
@@ -413,30 +413,24 @@
       document.getElementById("undo").addEventListener("click", undo);
       newGame();
     };
-    let windowResize = () => {
-      let rect = d.c.parentNode.getBoundingClientRect();
+    const windowResize = () => {
+      const rect = d.c.parentNode.getBoundingClientRect();
       d.setCanvasSize(rect.width * window.devicePixelRatio, rect.height * window.devicePixelRatio);
     };
-    let draw = () => {
+    const draw = () => {
       d.background("black");
       d.fill("white");
       if (game !== null) {
         game.draw(d);
-        let timeDiv = document.getElementById("time");
+        const timeDiv = document.getElementById("time");
         timeDiv.innerHTML = `Time: ${Math.floor((Date.now() - game.starttime) / 1e3)}`;
       }
       window.requestAnimationFrame(draw);
     };
-    let tick = () => {
-      draw();
-    };
-    let mouseclickHandler = (e) => {
-      console.log("mouse click");
-    };
-    let mousedownHandler = (e) => {
+    const mousedownHandler = (e) => {
       console.log("MD", e.clientX, e.clientY);
       if (game !== null) {
-        let card = game.getCard(e.clientX, e.clientY);
+        const card = game.getCard(e.clientX, e.clientY);
         if (card !== null) {
           selectedCard = card;
           selectOffset.x = e.clientX - card.pos.x;
@@ -444,35 +438,35 @@
         }
       }
     };
-    let mouseupHandler = (e) => {
+    const mouseupHandler = (e) => {
       if (selectedCard !== null) {
         console.log("mouse up");
         game.moveCard(selectedCard, game.getStackFromMouse(e.clientX, e.clientY));
         selectedCard = null;
-        let movesDiv = document.getElementById("moves");
+        const movesDiv = document.getElementById("moves");
         movesDiv.innerHTML = `Moves: ${game.moves}`;
       }
     };
-    let mousemoveHandler = (e) => {
+    const mousemoveHandler = (e) => {
       console.log("mouse move", e.clientX, e.clientY);
       if (selectedCard !== null) {
         selectedCard.pos.x = e.clientX - selectOffset.x;
         selectedCard.pos.y = e.clientY - selectOffset.y;
       }
     };
-    let touchdownHandler = (e) => {
+    const touchdownHandler = (e) => {
       console.log("touch down");
       lastTouchPos = { clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY) };
       mousedownHandler(lastTouchPos);
       e.preventDefault();
     };
-    let touchmoveHandler = (e) => {
+    const touchmoveHandler = (e) => {
       console.log("touch move", e.touches);
       lastTouchPos = { clientX: toScaled(e.touches[0].clientX), clientY: toScaled(e.touches[0].clientY) };
       mousemoveHandler(lastTouchPos);
       e.preventDefault();
     };
-    let touchupHandler = (e) => {
+    const touchupHandler = (e) => {
       mouseupHandler(lastTouchPos);
       e.preventDefault();
     };
