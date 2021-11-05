@@ -1,4 +1,7 @@
-class Game {
+import {Card, updateCardDims, CARD_X_MARGIN, CARD_DIMS} from './cards'
+import {Lcg} from './lcg'
+
+export class Game {
   constructor(_d, _seed) {
     this.cards = []
     this.moves = 0

@@ -5,7 +5,8 @@
   "description": "A basic freecell app",
   "main": "server.js",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "builddev": "esbuild src/app.js --bundle --sourcemap --outfile=www/js/main.js"
   },
   "author": "natfaulk",
   "license": "ISC",
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@natfaulk/supersimplelogger": "^1.0.3",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "mindrawingjs": "^1.2.3"
   }
 }

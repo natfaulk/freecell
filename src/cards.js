@@ -1,13 +1,13 @@
 // some default values in case doesn't get updated should be visible still
-let CARD_DIMS = {x: 10, y: 10, fontsize: 20}
-const CARD_X_MARGIN = 5
-let updateCardDims = _d => {
+export const CARD_DIMS = {x: 10, y: 10, fontsize: 20}
+export const CARD_X_MARGIN = 5
+export const updateCardDims = _d => {
   CARD_DIMS.x = (_d.width - CARD_X_MARGIN) / 8 - CARD_X_MARGIN
   CARD_DIMS.y = CARD_DIMS.x * 1.4
   CARD_DIMS.fontsize = Math.round(CARD_DIMS.x * 0.3)
 }
 
-class Card {
+export class Card {
   constructor(_suit, _num, _pos) {
     if (!validateSuit(_suit)) {
       console.log('invalid card suit')

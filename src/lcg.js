@@ -1,6 +1,6 @@
 // MS Linear congruential generator
 
-class Lcg{
+export class Lcg{
   constructor(_seed) {
     this.state = _seed
   }
